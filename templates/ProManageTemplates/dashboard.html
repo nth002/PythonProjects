@@ -1,0 +1,174 @@
+{% extends "ProManageTemplates/backoffice.html" %}
+{% load static %}
+{% block title %} Dasboard{% endblock %}
+{% block hscripts %}
+    <style>
+        .card_blue {
+            background: linear-gradient(to bottom, #ff3333 0%, #5c5c5c 100%);
+            color: white;
+            border: 1px solid blue;
+        }
+
+        .card_orange {
+            background: linear-gradient(to bottom, #ff3333 0%, #5c5c5c 100%);
+            color: white;
+            border: 1px solid #f49700;
+        }
+
+        .card_green {
+            background: linear-gradient(to bottom, #ff3333 0%, #5c5c5c 100%);
+            color: white;
+            border: 1px solid #269937;
+        }
+
+        .card_red {
+            background: linear-gradient(to bottom, #ff3333 0%, #5c5c5c 100%);
+            color: white;
+            border: 1px solid #b20002;
+        }
+    </style>
+{% endblock %}
+
+{% block main %}
+    <div class="container mt-4">
+
+        <div class="row">
+            <div class="col-md-3">
+                <div class="card card_blue mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">AI Chatbot Usage</h5>
+                        <p class="card-text">Active Sessions: 120</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card card_green mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">ISL Recognitions</h5>
+                        <p class="card-text">Total Signs Processed: 300</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card card_red mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">Emotion Detections</h5>
+                        <p class="card-text">Total Faces Analyzed: 500</p>
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-md-3">
+                <div class="card card_orange mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">Emotion Detections</h5>
+                        <p class="card-text">Total Faces Analyzed: 500</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4">
+                <canvas id="aiChatChart"></canvas>
+            </div>
+            <div class="col-md-4">
+                <canvas id="emotionChart"></canvas>
+            </div>
+            <div class="col-md-4">
+                <canvas id="faceRecognitionAccuracy"></canvas>
+            </div>
+        </div>
+    </div>
+
+
+
+
+{% endblock %}
+{% block fscripts %}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const ctx1 = document.getElementById('aiChatChart').getContext('2d');
+        const gradient1 = ctx1.createLinearGradient(0, 0, 0, 400);
+        gradient1.addColorStop(0, 'rgba(255, 0, 0, 0.6)');
+        gradient1.addColorStop(1, 'rgba(0, 0, 0, 0.6)');
+
+        new Chart(ctx1, {
+            type: 'bar',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                datasets: [{
+                    label: 'AI Chatbot Sessions',
+                    data: [30, 50, 80, 120, 90, 110],
+                    backgroundColor: gradient1,
+                    borderColor: 'rgba(255, 0, 0, 1)',
+                    borderWidth: 1
+                }]
+            }
+        });
+
+        const ctx2 = document.getElementById('emotionChart').getContext('2d');
+        const gradient = ctx2.createLinearGradient(0, 0, 0, 400);
+        gradient.addColorStop(0, 'rgba(255, 0, 0, 0.6)');
+        gradient.addColorStop(1, 'rgba(0, 0, 0, 0.6)');
+
+        new Chart(ctx2, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                datasets: [{
+                    label: 'Emotion Analysis',
+                    data: [200, 150, 180, 170, 220, 190],
+                    borderColor: 'rgba(255, 0, 0, 1)',
+                    backgroundColor: gradient,
+                    fill: true,
+                    tension: 0.4
+                }]
+            }
+        });
+        const ctx3 = document.getElementById('faceRecognitionAccuracy').getContext('2d');
+        const gradient2 = ctx3.createLinearGradient(0, 0, 0, 400);
+        gradient2.addColorStop(0, 'rgba(255, 0, 0, 0.6)');
+        gradient2.addColorStop(1, 'rgba(0, 0, 0, 0.6)');
+
+        new Chart(ctx3, {
+            type: 'line',
+            data: {
+                labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+                datasets: [{
+                    label: 'Emotion Analysis',
+                    data: [-60, -20, -40, 80, 30, 50, -90],
+                    borderColor: 'rgba(255, 0, 0, 1)',
+                    backgroundColor: gradient2,
+                    fill: true,
+                    tension: 0.4,
+                    pointStyle: 'circle',
+                    pointRadius: 5,
+                    pointHoverRadius: 7,
+                    borderWidth: 2
+                }, {
+                    label: 'AI Chat Sessions',
+                    data: [-70, 10, -80, 90, 20, 60, -100],
+                    borderColor: 'rgba(0, 0, 255, 1)',
+                    backgroundColor: 'rgba(0, 0, 255, 0.2)',
+                    fill: true,
+                    tension: 0.4,
+                    pointStyle: 'circle',
+                    pointRadius: 5,
+                    pointHoverRadius: 7,
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: false
+                    }
+                }
+            }
+        });
+
+    </script>
+{% endblock %}

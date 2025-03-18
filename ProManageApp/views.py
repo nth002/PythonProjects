@@ -18,3 +18,19 @@ def login(request):
     except Exception as e:
         print("Exception at index --> ", e)
         return HttpResponseRedirect('/')
+
+@csrf_exempt
+def managerDashboard(request):
+    try:
+        return render(request, 'ProManageTemplates/dashboard.html')
+    except Exception as e:
+        print('Exception add_invite ---> ', e, flush=True)
+        return HttpResponseRedirect('/')
+
+@csrf_exempt
+def addProject(request):
+    try:
+        return render(request, 'ProManageTemplates/addProject.html')
+    except Exception as e:
+        print('Exception add_invite ---> ', e, flush=True)
+        return HttpResponseRedirect('/')

@@ -1,0 +1,208 @@
+{% extends "ProManageTemplates/backoffice.html" %}
+{% load static %}
+{% block title %} Add Project {% endblock %}
+{% block hscripts %}
+    <style>
+        /* General Styles */
+        body {
+            background: #343541;
+            font-family: 'Arial', sans-serif;
+        }
+
+        /* Chat Container */
+        .chat-container {
+            width: 100%;
+{#            max-width: 800px;#}
+            height: 80vh;
+            display: flex;
+            flex-direction: column;
+            border-radius: 10px;
+            background: #40414F;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Chat Body */
+        .chat-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            background: url("https://i.imgur.com/qFZbK5Z.png"); /* WhatsApp-style background */
+            background-size: contain;
+        }
+
+        .chat-body::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .chat-body::-webkit-scrollbar-thumb {
+            background: #007bff;
+            border-radius: 5px;
+        }
+
+        /* Messages */
+        .bot-message, .user-message {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .bot-message .message, .user-message .message {
+            padding: 12px 15px;
+            border-radius: 10px;
+            max-width: 75%;
+            font-size: 16px;
+        }
+
+        .bot-message .avatar, .user-message .avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 18px;
+            margin-right: 10px;
+        }
+
+        /* Bot Message */
+        .bot-message {
+            flex-direction: row;
+        }
+
+        .bot-message .avatar {
+            background: #007bff;
+            color: white;
+        }
+
+        .bot-message .message {
+            background: #3a3b45;
+            color: white;
+        }
+
+        /* User Message */
+        .user-message {
+            flex-direction: row-reverse;
+            text-align: right;
+        }
+
+        .user-message .avatar {
+            background: #25D366;
+            color: white;
+        }
+
+        .user-message .message {
+            background: #0d6efd;
+            color: white;
+        }
+
+        /* Chat Footer */
+        .chat-footer {
+            display: flex;
+            padding: 15px;
+            background: #202123;
+            border-top: 1px solid #444;
+        }
+
+        #chat-input {
+            flex: 1;
+            border: none;
+            padding: 12px;
+            border-radius: 20px;
+            background: #444;
+            color: white;
+        }
+
+        #chat-input:focus {
+            outline: none;
+        }
+
+        #send-btn {
+            margin-left: 10px;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            font-size: 18px;
+        }
+
+
+    </style>
+{% endblock %}
+
+{% block main %}
+    <div class="container mt-4">
+        <div class="chat-container">
+            <div class="chat-body" id="chat-body">
+                <div class="bot-message">
+                    <div class="avatar"><i class="fa fa-user"></i></div>
+                    <div class="message">Hello! How can I assist you today? 😊</div>
+                </div>
+            </div>
+
+            <div class="chat-footer">
+                <input type="text" id="chat-input" class="form-control" placeholder="Send a message...">
+                <button class="btn btn-primary" id="send-btn"><i class="fa fa-send"></i></button>
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}
+{% block fscripts %}
+    <script>
+       document.getElementById("send-btn").addEventListener("click", sendMessage);
+document.getElementById("chat-input").addEventListener("keypress", function(event) {
+    if (event.key === "Enter") {
+        sendMessage();
+    }
+});
+
+function sendMessage() {
+    let inputField = document.getElementById("chat-input");
+    let message = inputField.value.trim();
+    if (message === "") return;
+
+    let chatBody = document.getElementById("chat-body");
+
+    // User Message
+    let userMessage = document.createElement("div");
+    userMessage.classList.add("user-message");
+    userMessage.innerHTML = `
+        <div class="message">${message}</div>
+        <div class="avatar"><i class="fa fa-user"></i></div>
+    `;
+    chatBody.appendChild(userMessage);
+    chatBody.scrollTop = chatBody.scrollHeight;
+    inputField.value = "";
+
+    setTimeout(() => {
+        // Bot Typing Effect
+        let botTyping = document.createElement("div");
+        botTyping.classList.add("bot-message");
+        botTyping.innerHTML = `
+            <div class="avatar"><i class="fa fa-user"></i></div>
+            <div class="message">🤖 Typing...</div>
+        `;
+        chatBody.appendChild(botTyping);
+        chatBody.scrollTop = chatBody.scrollHeight;
+
+        setTimeout(() => {
+            botTyping.remove(); // Remove typing effect
+
+            // Bot Reply
+            let botReply = document.createElement("div");
+            botReply.classList.add("bot-message");
+            botReply.innerHTML = `
+                <div class="avatar"><i class="fa fa-user"></i></div>
+                <div class="message">I'm here to help! 😊</div>
+            `;
+            chatBody.appendChild(botReply);
+            chatBody.scrollTop = chatBody.scrollHeight;
+        }, 1500);
+    }, 1000);
+}
+
+
+    </script>
+{% endblock %}

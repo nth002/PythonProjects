@@ -6,8 +6,8 @@ from django.conf.urls.static import static
 urlpatterns = [
 
     path('', views.index, name="index"),
-    path('login-or-signup', views.login, name="login"),
+    path('login-or-signup/', views.login, name="login"),
+    path('manager-dashboard/', views.managerDashboard, name="manager_dashboard"),
+    path('add-project/', views.addProject, name="add_project"),
 
-]
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
