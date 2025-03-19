@@ -1,5 +1,5 @@
 import json
-import openai
+# import openai
 from datetime import datetime, timedelta
 
 from openai import OpenAI
