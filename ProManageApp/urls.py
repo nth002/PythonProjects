@@ -10,5 +10,6 @@ urlpatterns = [
     path('manager-dashboard/', views.managerDashboard, name="manager_dashboard"),
     path('add-project/', views.addProject, name="add_project"),
     path('login_with_username/', views.login_with_username, name="login_with_username"),
+    path("chatbot/", views.chatbot, name="chatbot"),
 
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

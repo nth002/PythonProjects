@@ -149,7 +149,7 @@
 {% endblock %}
 {% block fscripts %}
     <script>
-       document.getElementById("send-btn").addEventListener("click", sendMessage);
+document.getElementById("send-btn").addEventListener("click", sendMessage);
 document.getElementById("chat-input").addEventListener("keypress", function(event) {
     if (event.key === "Enter") {
         sendMessage();
@@ -174,33 +174,46 @@ function sendMessage() {
     chatBody.scrollTop = chatBody.scrollHeight;
     inputField.value = "";
 
-    setTimeout(() => {
-        // Bot Typing Effect
-        let botTyping = document.createElement("div");
-        botTyping.classList.add("bot-message");
-        botTyping.innerHTML = `
+    // Show Typing Effect
+    let botTyping = document.createElement("div");
+    botTyping.classList.add("bot-message");
+    botTyping.innerHTML = `
+        <div class="avatar"><i class="fa fa-user"></i></div>
+        <div class="message">🤖 Typing...</div>
+    `;
+    chatBody.appendChild(botTyping);
+    chatBody.scrollTop = chatBody.scrollHeight;
+
+    // Send message to Django backend
+    fetch("/chatbot/", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": getCSRFToken(), // Ensure CSRF token is included
+        },
+        body: JSON.stringify({ message: message }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        botTyping.remove(); // Remove typing effect
+
+        // Bot Reply
+        let botReply = document.createElement("div");
+        botReply.classList.add("bot-message");
+        botReply.innerHTML = `
             <div class="avatar"><i class="fa fa-user"></i></div>
-            <div class="message">🤖 Typing...</div>
+            <div class="message">${data.reply}</div>
         `;
-        chatBody.appendChild(botTyping);
+        chatBody.appendChild(botReply);
         chatBody.scrollTop = chatBody.scrollHeight;
-
-        setTimeout(() => {
-            botTyping.remove(); // Remove typing effect
-
-            // Bot Reply
-            let botReply = document.createElement("div");
-            botReply.classList.add("bot-message");
-            botReply.innerHTML = `
-                <div class="avatar"><i class="fa fa-user"></i></div>
-                <div class="message">I'm here to help! 😊</div>
-            `;
-            chatBody.appendChild(botReply);
-            chatBody.scrollTop = chatBody.scrollHeight;
-        }, 1500);
-    }, 1000);
+    })
+    .catch(error => console.error("Error:", error));
 }
 
+// Function to get CSRF token for Django
+    function getCSRFToken() {
+        return document.cookie.split('; ').find(row => row.startsWith('csrftoken='))?.split('=')[1];
+    }
 
     </script>
 {% endblock %}

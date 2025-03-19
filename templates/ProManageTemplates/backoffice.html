@@ -46,12 +46,12 @@
         }
 
         .nav-item .nav-link.active {
-                background: linear-gradient(to bottom, rgba(255, 51, 51, 0.66) 0%, #5c5c5c 100%);
-            color: white !important;
+{#                background: linear-gradient(to bottom, rgba(255, 51, 51, 0.66) 0%, #5c5c5c 100%);#}
+            color: #b94545 !important;
         }
 
         .btn_red_toogle_bar {
-            background: #b20002;
+{#            background: #b20002;#}
             border-radius: 0;
             height: 3rem;
             margin-top: -0.1rem;
@@ -59,6 +59,13 @@
             width: 91% !important;
             margin-left: 10px;
             color: white;!important;
+        }
+        .btn_red_toogle_bar img{
+            height: 4rem;
+            width: 13.3rem;
+            margin-top: -0.5rem;
+            margin-left: -0.9rem;
+            background: #525252;
         }
         .fa {
             cursor: pointer;
@@ -74,14 +81,14 @@
 <body>
 <!-- Sidebar -->
 <div id="sidebar" class="bg-dark">
-    <button class="btn btn_red_toogle_bar w-100" onclick="toggleSidebar()">Multi Model</button>
-    <ul class="nav flex-column mt-3">
+    <button class="btn btn_red_toogle_bar w-100" onclick="toggleSidebar()"><img src="{% static 'assets/img/logo-1.png' %}"></button>
+    <ul class="nav flex-column mt-5">
         <li class="nav-item">
             <a class="nav-link text-white" href="/manager-dashboard/" onclick="setActive(this)">Dashboard </a>
         </li>
         <li class="nav-item">
             <a class="nav-link text-white" data-bs-toggle="collapse" href="#menu1" onclick="setActive(this)"
-               aria-expanded="true">Models<i class="fa fa-angle-down" style="margin-left: 1rem"></i></a>
+               aria-expanded="true">Multi Models<i class="fa fa-angle-down" style="margin-left: 1rem"></i></a>
             <div class="collapse" id="menu1">
                 <ul class="nav flex-column ms-3">
                     <li class="nav-item"><a class="nav-link text-white" href="/add-project/" onclick="setActive(this)">AI

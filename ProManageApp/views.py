@@ -1,6 +1,8 @@
 import json
+import openai
 from datetime import datetime, timedelta
 
+from openai import OpenAI
 from django.http import HttpResponseRedirect, JsonResponse, HttpResponse
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
@@ -8,7 +10,7 @@ from django.views.decorators.csrf import csrf_exempt
 # Create your views here.
 from ProManageApp.models import Users
 
-
+client = OpenAI(api_key="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")
 @csrf_exempt
 def index(request):
     try:
@@ -86,3 +88,19 @@ def login_with_username_service(username, password):
             return {"result": "Invalid", "msg": "Invalid Username."}
     except Exception as e:
         return {"result": "error", "msg": "login error."}
+
+@csrf_exempt
+def chatbot(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        user_message = data.get("message", "")
+
+        response = client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=[{"role": "user", "content": user_message}]
+        )
+
+        bot_reply = response.choices[0].message.content
+        return JsonResponse({"reply": bot_reply})
+
+    return JsonResponse({"error": "Invalid request"}, status=400)
