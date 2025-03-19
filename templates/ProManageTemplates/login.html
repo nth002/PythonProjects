@@ -1,6 +1,4 @@
 {% load static %}
-
-<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -31,10 +29,32 @@
                 height: 100%;
             }
         }
+
+        .box-CAPTCHA {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .reload {
+            height: 42px;
+            margin-left: 10px;
+            padding: 10px 15px;
+            border: none;
+            background-color: #f1f1f1;
+            cursor: pointer;
+            /* border-radius: 8px; */
+            transition: background-color 0.3 sease;
+            /* box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); */
+            display: flex;
+            align-items: center;
+
+        }
     </style>
 </head>
 <body>
 <section class="vh-100">
+    <input type="hidden" id="hiddenCaptchaText" value=""/>
     <div class="container-fluid h-custom">
         <div class="row d-flex justify-content-center align-items-center h-100" style="padding: 9rem">
             <div class="col-md-9 col-lg-6 col-xl-5">
@@ -44,33 +64,49 @@
                 <form>
                     <div class="d-flex flex-row align-items-center justify-content-center justify-content-lg-start">
                         <p class="lead fw-normal mb-0 me-3">Sign in with</p>
-                        <button type="button" class="btn btn-primary btn-floating mx-1" style="background: #dc3545; border: #dc3545">
+                        <button type="button" class="btn btn-primary btn-floating mx-1"
+                                style="background: #dc3545; border: #dc3545">
                             <i class="fab fa-facebook-f"></i>
                         </button>
-                        <button type="button" style="background: #dc3545; border: #dc3545" class="btn btn-primary btn-floating mx-1">
+                        <button type="button" style="background: #dc3545; border: #dc3545"
+                                class="btn btn-primary btn-floating mx-1">
                             <i class="fab fa-twitter"></i>
                         </button>
-                        <button type="button" style="background: #dc3545; border: #dc3545" class="btn btn-primary btn-floating mx-1">
+                        <button type="button" style="background: #dc3545; border: #dc3545"
+                                class="btn btn-primary btn-floating mx-1">
                             <i class="fab fa-linkedin-in"></i>
                         </button>
                     </div>
-
                     <div class="divider d-flex align-items-center my-4">
                         <p class="text-center fw-bold mx-3 mb-0">Or</p>
                     </div>
-
                     <div class="form-outline mb-4">
-                        <input type="email" id="form3Example3" class="form-control form-control-lg"
+                        <input type="email" id="email_contact" class="form-control form-control-lg"
                                placeholder="Enter a valid email address"/>
-                        <label class="form-label" for="form3Example3">Email address</label>
+                        <label class="form-label" for="email_contact">Email address</label>
                     </div>
-
                     <div class="form-outline mb-3">
-                        <input type="password" id="form3Example4" class="form-control form-control-lg"
+                        <input type="password" id="password" class="form-control form-control-lg"
                                placeholder="Enter password"/>
-                        <label class="form-label" for="form3Example4">Password</label>
+                        <label class="form-label" for="password">Password</label>
                     </div>
-
+                    <div class="form-outline mb-3">
+                        <div class="form-group mb-2">
+                            <div class="box-CAPTCHA" id="box-CAPTCHA">
+                                <canvas id="captchaCanvas" width="220" height="40"></canvas>
+                                <button class="reload" type="button" onclick="generateCAPTCHA()">
+                                    <i class="fas fa-sync-alt" style="color: #0d6efd;"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-outline mb-3">
+                        <div class="form-group mb-2">
+                            <input class="form-control" id="captcha_input" maxlength="100" minlength="3"
+                                   autofocus="true" required="true" placeholder="Enter CAPTCHA"
+                                   name="captcha_input" type="text">
+                        </div>
+                    </div>
                     <div class="d-flex justify-content-between align-items-center">
                         <div class="form-check mb-0">
                             <input class="form-check-input me-2" type="checkbox" id="form2Example3"/>
@@ -78,7 +114,6 @@
                         </div>
                         <a href="#" class="text-body">Forgot password?</a>
                     </div>
-
                     <div class="text-center text-lg-start mt-4 pt-2">
                         <button type="button" id="login" class="btn btn-danger btn-lg"
                                 style="padding-left: 2.5rem; padding-right: 2.5rem;">Login
@@ -109,13 +144,61 @@
 <script src="{% static 'assets/vendor/imagesloaded/imagesloaded.pkgd.min.js' %}"></script>
 <script src="{% static 'assets/vendor/isotope-layout/isotope.pkgd.min.js' %}"></script>
 <script src="{% static 'assets/vendor/js/jquery.min.js' %}"></script>
-
+<script src="{% static 'assets/vendor/js/sweetalert.min.js' %}"></script>
+<script src="{% static 'assets/js/login.js' %}"></script>
 <script>
-    $(document).ready(function (){
-        $("#login").click(function (){
-            window.location.href="/manager-dashboard/"
-        })
-    })
+    var captchaText = ""; // Variable to store the CAPTCHA text
+
+        function generateRandomCaptcha() {
+            const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+            let captcha = "";
+            for (let i = 0; i < 6; i++) {
+                captcha += characters.charAt(Math.floor(Math.random() * characters.length));
+            }
+            return captcha;
+        }
+
+        function drawCaptcha(captchaText) {
+            const canvas = document.getElementById("captchaCanvas");
+            const ctx = canvas.getContext("2d");
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = "#f0f0f0";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.font = "20px Arial";
+            ctx.fillStyle = "#000";
+            ctx.textBaseline = "middle";
+            ctx.textAlign = "center";
+
+            const angle = (Math.random() - 0.5) * 0.3;
+            ctx.translate(canvas.width / 2, canvas.height / 2);
+            ctx.rotate(angle);
+
+            ctx.fillText(captchaText, 0, 0);
+
+            ctx.rotate(-angle);
+            ctx.translate(-canvas.width / 2, -canvas.height / 2);
+
+            for (let i = 0; i < 5; i++) {
+                ctx.strokeStyle = `rgba(0, 0, 0, ${Math.random() * 0.5})`;
+                ctx.beginPath();
+                ctx.moveTo(Math.random() * canvas.width, Math.random() * canvas.height);
+                ctx.lineTo(Math.random() * canvas.width, Math.random() * canvas.height);
+                ctx.stroke();
+            }
+        }
+
+        function generateCAPTCHA() {
+            captchaText = generateRandomCaptcha();
+            drawCaptcha(captchaText);
+            $("#hiddenCaptchaText").val(captchaText);
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            generateCAPTCHA();
+        });
 </script>
 </body>
 </html>
