@@ -10,7 +10,7 @@ from django.views.decorators.csrf import csrf_exempt
 # Create your views here.
 from ProManageApp.models import Users
 
-client = OpenAI(api_key="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")
+client = OpenAI(api_key="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")
 @csrf_exempt
 def index(request):
     try:
