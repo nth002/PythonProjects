@@ -1,6 +1,5 @@
 import json
 import openai
-import google.generativeai as genai
 from datetime import datetime, timedelta
 
 import requests
@@ -88,8 +87,8 @@ def login_with_username_service(username, password):
     except Exception as e:
         return {"result": "error", "msg": "login error."}
 
-GEMINI_API_KEY = "AIzaSyBQV75KLHSXLARfrGsxdWAVGRMB99W2OCE"  # Replace with your actual API key
-genai.configure(api_key=GEMINI_API_KEY)
+
+MISTRAL_API_KEY = "Qgc5RLSVYzsf6CNOBLYHYotDKV3soCiG"
 
 @csrf_exempt
 def chatbot(request):
@@ -98,15 +97,30 @@ def chatbot(request):
             data = json.loads(request.body)
             user_message = data.get("message", "")
 
-            # Gemini AI model
-            model = genai.GenerativeModel("gemini-pro")
-            response = model.generate_content(user_message)
+            # Prepare request payload
+            payload = {
+                "model": "mistral-medium",  # Change if needed
+                "messages": [{"role": "user", "content": user_message}]
 
-            bot_reply = response.text if hasattr(response, "text") else "Sorry, I couldn't understand that."
+            }
 
-            return JsonResponse({"reply": bot_reply})
+            # Make request to Mistral API
+            headers = {
+                "Authorization": f"Bearer {MISTRAL_API_KEY}",
+                "Content-Type": "application/json"
+            }
+
+            response = requests.post("https://api.mistral.ai/v1/chat/completions", json=payload, headers=headers)
+
+            # Handle response
+            if response.status_code == 200:
+                bot_reply = response.json()["choices"][0]["message"]["content"]
+                return JsonResponse({"reply": bot_reply})
+            else:
+                return JsonResponse({"error": response.json()}, status=response.status_code)
 
         except Exception as e:
+            print("Exception --->", e)
             return JsonResponse({"error": str(e)}, status=500)
 
     return JsonResponse({"error": "Invalid request"}, status=400)
