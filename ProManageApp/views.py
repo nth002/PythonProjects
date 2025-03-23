@@ -1,16 +1,15 @@
 import json
-# import openai
+import openai
+import google.generativeai as genai
 from datetime import datetime, timedelta
 
-from openai import OpenAI
+import requests
 from django.http import HttpResponseRedirect, JsonResponse, HttpResponse
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
-
 # Create your views here.
 from ProManageApp.models import Users
 
-client = OpenAI(api_key="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")
 @csrf_exempt
 def index(request):
     try:
@@ -89,18 +88,25 @@ def login_with_username_service(username, password):
     except Exception as e:
         return {"result": "error", "msg": "login error."}
 
+GEMINI_API_KEY = "AIzaSyBQV75KLHSXLARfrGsxdWAVGRMB99W2OCE"  # Replace with your actual API key
+genai.configure(api_key=GEMINI_API_KEY)
+
 @csrf_exempt
 def chatbot(request):
     if request.method == "POST":
-        data = json.loads(request.body)
-        user_message = data.get("message", "")
+        try:
+            data = json.loads(request.body)
+            user_message = data.get("message", "")
 
-        response = client.chat.completions.create(
-            model="gpt-3.5-turbo",
-            messages=[{"role": "user", "content": user_message}]
-        )
+            # Gemini AI model
+            model = genai.GenerativeModel("gemini-pro")
+            response = model.generate_content(user_message)
 
-        bot_reply = response.choices[0].message.content
-        return JsonResponse({"reply": bot_reply})
+            bot_reply = response.text if hasattr(response, "text") else "Sorry, I couldn't understand that."
+
+            return JsonResponse({"reply": bot_reply})
+
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
 
     return JsonResponse({"error": "Invalid request"}, status=400)

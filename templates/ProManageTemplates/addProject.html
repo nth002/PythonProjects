@@ -166,10 +166,9 @@ function sendMessage() {
     // User Message
     let userMessage = document.createElement("div");
     userMessage.classList.add("user-message");
-    userMessage.innerHTML = `
-        <div class="message">${message}</div>
-        <div class="avatar"><i class="fa fa-user"></i></div>
-    `;
+    userMessage.innerHTML =
+        "<div class='message'>" + message + "</div>" +
+        "<div class='avatar'><i class='fa fa-user'></i></div>";
     chatBody.appendChild(userMessage);
     chatBody.scrollTop = chatBody.scrollHeight;
     inputField.value = "";
@@ -177,14 +176,13 @@ function sendMessage() {
     // Show Typing Effect
     let botTyping = document.createElement("div");
     botTyping.classList.add("bot-message");
-    botTyping.innerHTML = `
-        <div class="avatar"><i class="fa fa-user"></i></div>
-        <div class="message">🤖 Typing...</div>
-    `;
+    botTyping.innerHTML =
+        "<div class='avatar'><i class='fa fa-robot'></i></div>" +
+        "<div class='message'>🤖 Typing...</div>";
     chatBody.appendChild(botTyping);
     chatBody.scrollTop = chatBody.scrollHeight;
 
-    // Send message to Django backend
+    // Send message to Django backend (Mistral AI)
     fetch("/chatbot/", {
         method: "POST",
         headers: {
@@ -200,15 +198,18 @@ function sendMessage() {
         // Bot Reply
         let botReply = document.createElement("div");
         botReply.classList.add("bot-message");
-        botReply.innerHTML = `
-            <div class="avatar"><i class="fa fa-user"></i></div>
-            <div class="message">${data.reply}</div>
-        `;
+        botReply.innerHTML =
+            "<div class='avatar'><i class='fa fa-robot'></i></div>" +
+            "<div class='message'>" + data.reply + "</div>";
         chatBody.appendChild(botReply);
         chatBody.scrollTop = chatBody.scrollHeight;
     })
-    .catch(error => console.error("Error:", error));
+    .catch(error => {
+        console.error("Error:", error);
+        botTyping.remove();
+    });
 }
+
 
 // Function to get CSRF token for Django
     function getCSRFToken() {
